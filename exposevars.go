@@ -2,15 +2,29 @@ package exposevars
 
 import (
 	// to expose /debug/vars
-	_ "expvar"
+	"expvar"
+	"runtime"
+	"time"
 
 	"fmt"
 	"net"
 	"net/http"
 )
 
-// Port to expose
+// Port to expose with
 func Port(port uint16) error {
+	var startTime = time.Now().UTC()
+
+	expvar.Publish("goroutines", expvar.Func(func() interface{} {
+		// return the goroutine count
+		return runtime.NumGoroutine()
+	}))
+
+	expvar.Publish("uptime", expvar.Func(expvar.Func(func() interface{} {
+		// return the uptime seconds
+		return int64(time.Since(startTime)) / 1e9
+	})))
+
 	sock, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		return err
