@@ -1,13 +1,37 @@
 package exposevars
 
 import (
+	"encoding/json"
+	"net/http"
 	"testing"
 	"time"
 )
 
 func TestExpose(t *testing.T) {
 	if err := Port(12345); err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
-	<-time.NewTimer(2 * time.Minute).C
+	time.Sleep(1 * time.Second)
+
+	var info map[string]interface{}
+	resp, err := http.Get("http://localhost:12345/debug/vars")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer resp.Body.Close()
+
+	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+		t.Fatal(err)
+	}
+
+	// check uptime
+	if info["uptime"].(float64) != float64(1) {
+		t.Error("uptime wrong")
+	}
+
+	// check goroutines
+	if info["goroutines"].(float64) <= float64(0) {
+		t.Error("goroutine error")
+	}
 }

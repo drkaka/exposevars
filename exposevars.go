@@ -22,7 +22,7 @@ func Port(port uint16) error {
 
 	expvar.Publish("uptime", expvar.Func(expvar.Func(func() interface{} {
 		// return the uptime seconds
-		return int64(time.Since(startTime)) / 1e9
+		return uint64(time.Since(startTime)) / 1e9
 	})))
 
 	sock, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
