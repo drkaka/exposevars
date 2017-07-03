@@ -25,7 +25,7 @@ func Port(port uint16) error {
 		return uint64(time.Since(startTime)) / 1e9
 	})))
 
-	sock, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	sock, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", port))
 	if err != nil {
 		return err
 	}
