@@ -8,7 +8,7 @@ import (
 )
 
 func TestExpose(t *testing.T) {
-	if err := Port(12345); err != nil {
+	if err := Start(12345, "abc"); err != nil {
 		t.Fatal(err)
 	}
 	time.Sleep(1 * time.Second)
@@ -32,6 +32,11 @@ func TestExpose(t *testing.T) {
 
 	// check goroutines
 	if info["goroutines"].(float64) <= float64(0) {
-		t.Error("goroutine error")
+		t.Error("goroutine wrong")
+	}
+
+	// check goroutines
+	if info["service"].(string) != "abc" {
+		t.Error("service name wrong")
 	}
 }
